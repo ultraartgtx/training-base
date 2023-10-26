@@ -257,3 +257,6 @@ MonoBehaviour:
   TombstonePrefab: {fileID: 7769973106181720602, guid: 40686a6c484c6574386f4e9f32d9d9d9,
     type: 3}
   RandoSeed: 100
+  ZombiePrefab: {fileID: 9044115827107593775, guid: c0ccb488695fc274198cb7fcf7ed14df,
+    type: 3}
+  ZombieSpawnRate: 3

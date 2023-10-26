@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS_tutorial.Scripts.ComponentsAndTags
+namespace ECS_tutorial
 {
     public struct GraveyardRandom : IComponentData
     {

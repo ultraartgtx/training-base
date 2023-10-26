@@ -1,4 +1,3 @@
-using ECS_tutorial.Scripts.ComponentsAndTags;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,6 +11,8 @@ namespace ECS_tutorial
         public int NumberTombstonesToSpawn;
         public GameObject TombstonePrefab;
         public uint RandoSeed;
+        public GameObject ZombiePrefab;
+        public float ZombieSpawnRate;
     }
 
     public class GraveyardBaker : Baker<GraveyardMono>
@@ -22,12 +23,16 @@ namespace ECS_tutorial
             {
                 FieldDimensions = authoring.FieldDimensions,
                 NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-                TombstonePrefab = GetEntity(authoring.TombstonePrefab)
+                TombstonePrefab = GetEntity(authoring.TombstonePrefab),
+                ZombiePrefab = GetEntity(authoring.ZombiePrefab),
+                ZombieSpawnRate = authoring.ZombieSpawnRate
             });
             AddComponent(new GraveyardRandom
             {
                 Value = Random.CreateFromIndex(authoring.RandoSeed)
             });
+            AddComponent<ZombieSpawnPoints>();
+            AddComponent<ZombieSpawnTimer>();
         }
     }
 }
