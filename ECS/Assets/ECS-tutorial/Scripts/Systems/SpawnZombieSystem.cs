@@ -1,11 +1,7 @@
-using Unity.Burst;
-using Unity.Collections;
+﻿using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine.Rendering;
 
-namespace ECS_tutorial
+namespace TMG.Zombies
 {
     [BurstCompile]
     public partial struct SpawnZombieSystem : ISystem
@@ -13,7 +9,12 @@ namespace ECS_tutorial
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-           
+            state.RequireForUpdate<ZombieSpawnTimer>();
+        }
+
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
         }
 
         [BurstCompile]
@@ -21,26 +22,36 @@ namespace ECS_tutorial
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
             var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
+
             new SpawnZombieJob
             {
                 DeltaTime = deltaTime,
-                ECB = ecbSingleton. CreateCommandBuffer (state. WorldUnmanaged)
-            }. Run ();
+                ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged)
+            }.Run();
         }
     }
+    
     [BurstCompile]
-    public partial struct SpawnZombieJob:IJobEntity
+    public partial struct SpawnZombieJob : IJobEntity
     {
-
         public float DeltaTime;
         public EntityCommandBuffer ECB;
-
+        
+        [BurstCompile]
         private void Execute(GraveyardAspect graveyard)
         {
             graveyard.ZombieSpawnTimer -= DeltaTime;
             if(!graveyard.TimeToSpawnZombie) return;
+            if(!graveyard.ZombieSpawnPointInitialized()) return;
+            
             graveyard.ZombieSpawnTimer = graveyard.ZombieSpawnRate;
             var newZombie = ECB.Instantiate(graveyard.ZombiePrefab);
+
+            var newZombieTransform = graveyard.GetZombieSpawnPoint();
+            ECB.SetComponent(newZombie, newZombieTransform);
+            
+            var zombieHeading = MathHelpers.GetHeading(newZombieTransform.Position, graveyard.Position);
+            ECB.SetComponent(newZombie, new ZombieHeading{Value = zombieHeading});
         }
     }
 }

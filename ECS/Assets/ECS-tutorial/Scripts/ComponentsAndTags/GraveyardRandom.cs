@@ -1,7 +1,7 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS_tutorial
+namespace TMG.Zombies
 {
     public struct GraveyardRandom : IComponentData
     {

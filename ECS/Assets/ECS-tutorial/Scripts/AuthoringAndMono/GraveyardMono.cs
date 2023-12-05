@@ -1,16 +1,16 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-namespace ECS_tutorial
+namespace TMG.Zombies
 {
     public class GraveyardMono : MonoBehaviour
     {
         public float2 FieldDimensions;
         public int NumberTombstonesToSpawn;
         public GameObject TombstonePrefab;
-        public uint RandoSeed;
+        public uint RandomSeed;
         public GameObject ZombiePrefab;
         public float ZombieSpawnRate;
     }
@@ -19,20 +19,22 @@ namespace ECS_tutorial
     {
         public override void Bake(GraveyardMono authoring)
         {
-            AddComponent(new GraveyardProperties
+            var graveyardEntity = GetEntity(TransformUsageFlags.Dynamic);
+            
+            AddComponent(graveyardEntity, new GraveyardProperties
             {
                 FieldDimensions = authoring.FieldDimensions,
                 NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-                TombstonePrefab = GetEntity(authoring.TombstonePrefab),
-                ZombiePrefab = GetEntity(authoring.ZombiePrefab),
+                TombstonePrefab = GetEntity(authoring.TombstonePrefab, TransformUsageFlags.Dynamic),
+                ZombiePrefab = GetEntity(authoring.ZombiePrefab, TransformUsageFlags.Dynamic),
                 ZombieSpawnRate = authoring.ZombieSpawnRate
             });
-            AddComponent(new GraveyardRandom
+            AddComponent(graveyardEntity, new GraveyardRandom
             {
-                Value = Random.CreateFromIndex(authoring.RandoSeed)
+                Value = Random.CreateFromIndex(authoring.RandomSeed)
             });
-            AddComponent<ZombieSpawnPoints>();
-            AddComponent<ZombieSpawnTimer>();
+            AddComponent<ZombieSpawnPoints>(graveyardEntity);
+            AddComponent<ZombieSpawnTimer>(graveyardEntity);
         }
     }
 }
